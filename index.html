@@ -1,262 +1,161 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>PhotoSpace – Responsive Image Gallery</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Image Gallery</title>
+
+  <!-- Basic Normal CSS -->
   <style>
-    /* ---------- GLOBAL THEME ---------- */
-    :root{
-      --bg:#f7f8fb; 
-      --card:#ffffff; 
-      --muted:#6b7280; 
-      --accent:#2563eb;
-      --radius:14px;
-      --gap:16px;
-      font-family: 'Poppins', system-ui, sans-serif;
-    }
-    *{box-sizing:border-box;margin:0;padding:0;}
-    body{background:var(--bg);color:#111;min-height:100vh;overflow-x:hidden;}
-
-    /* ---------- LANDING PAGE ---------- */
-    .landing{
-      position:fixed;inset:0;
-      display:flex;align-items:center;justify-content:center;
-      flex-direction:column;
-      background:linear-gradient(135deg,#2563eb,#3b82f6,#93c5fd);
-      color:#fff;text-align:center;
-      transition:opacity 0.8s ease, transform 1s ease;
-      z-index:1000;
-    }
-    .landing.hide{opacity:0;pointer-events:none;transform:scale(1.05);}
-    .landing h1{font-size:2.8rem;margin-bottom:12px;letter-spacing:1px;}
-    .landing p{max-width:500px;margin:0 auto 28px;font-size:1rem;opacity:0.9;}
-    .landing button{
-      background:#fff;color:#2563eb;
-      border:none;padding:12px 24px;font-size:1rem;
-      border-radius:var(--radius);cursor:pointer;
-      box-shadow:0 4px 12px rgba(0,0,0,0.15);
-      transition:transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .landing button:hover{
-      transform:translateY(-2px);
-      box-shadow:0 8px 20px rgba(0,0,0,0.25);
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f2f2f2;
     }
 
-    /* Animated background */
-    .bg-animation{
-      position:absolute;inset:0;overflow:hidden;z-index:-1;
-    }
-    .circle{
-      position:absolute;border-radius:50%;opacity:0.4;
-      animation: float 12s linear infinite;
-      background:rgba(255,255,255,0.15);
-    }
-    .circle:nth-child(1){width:120px;height:120px;top:10%;left:20%;animation-duration:14s;}
-    .circle:nth-child(2){width:200px;height:200px;top:50%;left:60%;animation-duration:18s;}
-    .circle:nth-child(3){width:160px;height:160px;top:70%;left:10%;animation-duration:16s;}
-    @keyframes float{
-      0%{transform:translateY(0) rotate(0deg);}
-      50%{transform:translateY(-30px) rotate(180deg);}
-      100%{transform:translateY(0) rotate(360deg);}
+    /* Landing Page */
+    .landing {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: #4a7dfc;
+      color: white;
     }
 
-    /* ---------- GALLERY SECTION ---------- */
-    .container{
-      display:none;
-      max-width:1100px;
-      margin:0 auto;
-      padding:32px;
+    .landing button {
+      padding: 12px 22px;
+      background: white;
+      color: #4a7dfc;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+      font-size: 16px;
     }
-    .container.active{display:block;animation:fadeIn 1s ease;}
-    @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 
-    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:8px;}
-    header h1{font-size:22px;margin:0;color:var(--accent);}
-    header p{color:var(--muted);font-size:14px;max-width:480px;}
-    .meta{color:var(--muted);font-size:13px;}
+    /* Main container */
+    .gallery-container {
+      display: none;
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 6px;
+    }
 
-    .uploader{
-      background:var(--card);
-      border-radius:var(--radius);
-      padding:18px;
-      box-shadow:0 6px 18px rgba(16,24,40,0.06);
+    .uploader {
+      margin-bottom: 20px;
     }
-    .upload-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
-    .btn{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:10px 14px;
-      border-radius:10px;
-      border:1px solid rgba(16,24,40,0.06);
-      background:#fff;
-      cursor:pointer;
-      transition:background 0.2s, transform 0.2s;
-    }
-    .btn:hover{background:#f3f4f6;transform:translateY(-1px);}
-    .btn.primary{background:linear-gradient(90deg,var(--accent),#3b82f6);color:#fff;border:none;}
-    .btn.ghost{background:transparent;}
 
-    .dropzone{
-      flex:1;border:2px dashed rgba(99,102,241,0.25);
-      padding:18px;border-radius:10px;
-      display:flex;align-items:center;justify-content:center;
-      min-height:88px;cursor:pointer;transition:all 0.3s;
+    .uploader input {
+      margin-top: 10px;
     }
-    .dropzone.dragover{background:rgba(99,102,241,0.04);border-color:rgba(37,99,235,0.5);}
 
-    .gallery{
-      margin-top:18px;
-      display:grid;
-      grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
-      gap:var(--gap);
+    /* Gallery Grid */
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
     }
-    .card{
-      background:var(--card);
-      border-radius:12px;
-      padding:8px;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:8px;
-      box-shadow:0 4px 14px rgba(16,24,40,0.04);
-      transition:transform 0.25s ease, box-shadow 0.25s ease;
-    }
-    .card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(16,24,40,0.08);}
-    .thumb{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;cursor:pointer;}
-    .filename{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%;padding:0 4px;}
-    .row{display:flex;gap:6px;width:100%;justify-content:space-between;padding:0 4px;}
-    .small{font-size:12px;color:var(--muted);}
-    .remove{background:transparent;border:none;color:#ef4444;cursor:pointer;font-size:13px;}
 
-    /* Modal */
-    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.7);z-index:999;}
-    .modal.open{display:flex;}
-    .modal img{max-width:95vw;max-height:90vh;border-radius:10px;box-shadow:0 10px 40px rgba(2,6,23,0.6);}
+    .gallery img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    /* Modal (full image view) */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal img {
+      max-width: 90%;
+      max-height: 80%;
+      border-radius: 8px;
+    }
   </style>
 </head>
 <body>
-  <!-- LANDING PAGE -->
-  <div class="landing" id="landing">
-    <div class="bg-animation">
-      <div class="circle"></div><div class="circle"></div><div class="circle"></div>
+
+  <!-- Landing Page -->
+  <div class="landing" id="landingPage">
+    <h1>Welcome to the Simple Gallery</h1>
+    <p>Add images from your device and see them instantly.</p>
+    <button id="startBtn">Start</button>
+  </div>
+
+  <!-- Gallery Page -->
+  <div class="gallery-container" id="galleryPage">
+    <h2>Your Image Gallery</h2>
+    <p>Select images to display them below.</p>
+
+    <div class="uploader">
+      <input type="file" id="fileInput" multiple accept="image/*">
     </div>
-    <h1>Welcome to <strong>PhotoSpace</strong></h1>
-    <p>Your simple, elegant and responsive image gallery. Add, preview, and enjoy your images instantly — no upload required!</p>
-    <button id="startBtn">🚀 Start Gallery</button>
+
+    <div class="gallery" id="gallery"></div>
   </div>
 
-  <!-- GALLERY PAGE -->
-  <div class="container" id="galleryContainer">
-    <header>
-      <div>
-        <h1>PhotoSpace Gallery</h1>
-        <p>Add images from your device or drag & drop them into the box below. Click a thumbnail to view full size.</p>
-      </div>
-      <div class="meta">Images stored temporarily in browser (no upload).</div>
-    </header>
-
-    <section class="uploader" id="uploader">
-      <div class="upload-controls">
-        <label class="btn" for="fileInput">📁 Choose Images
-          <input id="fileInput" type="file" accept="image/*" multiple style="display:none">
-        </label>
-        <button class="btn ghost" id="clearAll">🧹 Clear All</button>
-        <div class="dropzone" id="dropzone">Drag & drop images here or click to select</div>
-      </div>
-      <div class="meta">Tip: Select multiple files at once. Your images stay local.</div>
-      <div class="gallery" id="gallery" aria-live="polite"></div>
-    </section>
+  <!-- Modal -->
+  <div class="modal" id="modal">
+    <img id="modalImg" alt="">
   </div>
 
-  <div class="modal" id="modal" role="dialog" aria-modal="true">
-    <img id="modalImg" alt="Full view">
-  </div>
-
+  <!-- JavaScript -->
   <script>
-    /* --- LANDING PAGE --- */
-    const startBtn = document.getElementById('startBtn');
-    const landing = document.getElementById('landing');
-    const galleryContainer = document.getElementById('galleryContainer');
-    startBtn.addEventListener('click', ()=>{
-      landing.classList.add('hide');
-      setTimeout(()=> galleryContainer.classList.add('active'), 600);
+    const landingPage = document.getElementById("landingPage");
+    const galleryPage = document.getElementById("galleryPage");
+    const startBtn = document.getElementById("startBtn");
+    const fileInput = document.getElementById("fileInput");
+    const gallery = document.getElementById("gallery");
+    const modal = document.getElementById("modal");
+    const modalImg = document.getElementById("modalImg");
+
+    // Start button -> hide landing + show gallery
+    startBtn.addEventListener("click", () => {
+      landingPage.style.display = "none";
+      galleryPage.style.display = "block";
     });
 
-    /* --- GALLERY SCRIPT --- */
-    (function(){
-      const fileInput = document.getElementById('fileInput');
-      const dropzone = document.getElementById('dropzone');
-      const gallery = document.getElementById('gallery');
-      const clearAll = document.getElementById('clearAll');
-      const modal = document.getElementById('modal');
-      const modalImg = document.getElementById('modalImg');
-      const images = [];
+    // Load images
+    fileInput.addEventListener("change", () => {
+      const files = Array.from(fileInput.files);
 
-      function bytesToSize(bytes){
-        if(bytes===0) return '0 B';
-        const k = 1024, sizes = ['B','KB','MB','GB'];
-        const i = Math.floor(Math.log(bytes)/Math.log(k));
-        return parseFloat((bytes/Math.pow(k,i)).toFixed(2)) + ' ' + sizes[i];
-      }
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          const img = document.createElement("img");
+          img.src = e.target.result;
+          img.addEventListener("click", () => openModal(e.target.result));
+          gallery.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      });
+    });
 
-      function addFiles(fileList){
-        const files = Array.from(fileList).filter(f => f.type.startsWith('image/'));
-        files.forEach(file => {
-          const id = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2);
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            images.push({id, name:file.name, size:file.size, src:e.target.result});
-            renderGallery();
-          };
-          reader.readAsDataURL(file);
-        });
-      }
+    // Open modal
+    function openModal(src) {
+      modalImg.src = src;
+      modal.style.display = "flex";
+    }
 
-      function renderGallery(){
-        gallery.innerHTML = '';
-        if(images.length===0){
-          gallery.innerHTML = '<div style=\"padding:18px;color:var(--muted)\">No images yet — add some!</div>';
-          return;
-        }
-        images.forEach(img => {
-          const card = document.createElement('div'); card.className='card';
-          const imageEl = document.createElement('img'); imageEl.className='thumb'; imageEl.src = img.src; imageEl.alt = img.name;
-          imageEl.addEventListener('click', ()=> openModal(img.src, img.name));
-          const filename = document.createElement('div'); filename.className='filename'; filename.textContent = img.name;
-          const row = document.createElement('div'); row.className='row';
-          const small = document.createElement('div'); small.className='small'; small.textContent = bytesToSize(img.size);
-          const removeBtn = document.createElement('button'); removeBtn.className='remove'; removeBtn.innerHTML='Remove';
-          removeBtn.addEventListener('click', ()=> removeImage(img.id));
-          row.appendChild(small); row.appendChild(removeBtn);
-          card.append(imageEl, filename, row);
-          gallery.append(card);
-        });
-      }
-
-      function removeImage(id){
-        const idx = images.findIndex(i=>i.id===id);
-        if(idx>-1) images.splice(idx,1);
-        renderGallery();
-      }
-
-      function openModal(src, name){
-        modalImg.src = src; modalImg.alt = name;
-        modal.classList.add('open');
-      }
-
-      function closeModal(){ modal.classList.remove('open'); modalImg.src=''; }
-
-      fileInput.addEventListener('change', (e)=>{ if(e.target.files.length) addFiles(e.target.files); fileInput.value=''; });
-      ['dragenter','dragover'].forEach(ev => dropzone.addEventListener(ev, e=>{ e.preventDefault(); dropzone.classList.add('dragover'); }));
-      ['dragleave','drop'].forEach(ev => dropzone.addEventListener(ev, e=>{ e.preventDefault(); dropzone.classList.remove('dragover'); }));
-      dropzone.addEventListener('drop', e=>{ if(e.dataTransfer?.files?.length) addFiles(e.dataTransfer.files); });
-      dropzone.addEventListener('click', ()=> fileInput.click());
-      clearAll.addEventListener('click', ()=>{ if(confirm('Clear all images from the gallery?')){ images.length=0; renderGallery(); } });
-      modal.addEventListener('click', e=>{ if(e.target===modal || e.target===modalImg) closeModal(); });
-      document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeModal(); });
-
-      renderGallery();
-    })();
+    // Close modal on click
+    modal.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
   </script>
+
 </body>
 </html>
